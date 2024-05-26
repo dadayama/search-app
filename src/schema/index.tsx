@@ -6,4 +6,4 @@ export const FormSchema = z.object({
   campaign: z.array(z.string()).optional(),
 });
 
-export type FormSchema = z.infer<typeof FormSchema>;
+export type FormSchemaType = z.infer<typeof FormSchema>;

@@ -1,4 +1,5 @@
 import SearchBox from '@/components/SearchBox';
+import CustomMap from '@/components/Maps';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import styles from './index.module.scss';
@@ -16,6 +17,13 @@ interface Store {
   postcode: string;
   type: string[];
   campaign: Campaign[];
+  latitude: number;
+  longitude: number;
+}
+
+interface Location {
+  longitude: number;
+  latitude: number;
 }
 
 const Search = () => {
@@ -23,7 +31,9 @@ const Search = () => {
   const { query } = router;
   console.log(query);
 
-  const [results, setResults] = useState<Store[]>([]);
+  const [filteredStores, setFilteredStores] = useState<Store[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
+  console.log(locations);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,7 +62,13 @@ const Search = () => {
         });
         console.log(filteredStores);
 
-        setResults(filteredStores);
+        setFilteredStores(filteredStores);
+
+        const locations = filteredStores.map((store) => ({
+          latitude: store.latitude,
+          longitude: store.longitude,
+        }));
+        setLocations(locations);
       } catch (err) {
         console.error('error:', err);
       }
@@ -63,12 +79,13 @@ const Search = () => {
   return (
     <>
       <SearchBox />
-      {results.length > 0 ? (
-        results.map((result) => (
-          <div key={result.id} className={styles.storeContainer}>
+      <CustomMap locations={locations} />
+      {filteredStores.length > 0 ? (
+        filteredStores.map((store) => (
+          <div key={store.id} className={styles.storeContainer}>
             <div className={styles.storeBox}>
-              <p>{result.name}</p>
-              <p>{result.address}</p>
+              <p>{store.name}</p>
+              <p>{store.address}</p>
             </div>
           </div>
         ))
